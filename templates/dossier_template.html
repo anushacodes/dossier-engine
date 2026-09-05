@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ company_name }} × {{ interviewer_name }} | Executive & AI Technical Dossier</title>
+  <style>
+    :root {
+      --bg: #080c14;
+      --card-bg: #0f1624;
+      --card-inner: #151f33;
+      --card-border: #1e2a42;
+      --card-border-active: #38bdf8;
+      
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      
+      --accent-blue: #38bdf8;
+      --accent-indigo: #818cf8;
+      --accent-purple: #c084fc;
+      --accent-emerald: #34d399;
+      --accent-amber: #fbbf24;
+      --accent-rose: #fb7185;
+
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      line-height: 1.65;
+      font-size: 15px;
+      padding-bottom: 120px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* TOP STICKY BAR */
+    .hud-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(8, 12, 20, 0.96);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--card-border);
+      padding: 14px 32px;
+      box-shadow: 0 4px 28px rgba(0, 0, 0, 0.7);
+    }
+
+    .hud-container {
+      max-width: 1440px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .hud-title-group {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+    }
+
+    .hud-company {
+      font-size: 22px;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.5px;
+    }
+
+    .hud-sep {
+      color: var(--text-dim);
+      font-weight: 300;
+      font-size: 18px;
+    }
+
+    .hud-person {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--accent-indigo);
+    }
+
+    .hud-meta {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      margin-top: 2px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .judge-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: 11.5px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      background: rgba(52, 211, 153, 0.12);
+      border: 1px solid rgba(52, 211, 153, 0.4);
+      color: var(--accent-emerald);
+    }
+
+    .hud-nav {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .nav-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      transition: all 0.15s ease;
+    }
+
+    .nav-link:hover {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.05);
+      border-color: var(--card-border);
+    }
+
+    .filter-input {
+      background: #0b111e;
+      border: 1px solid var(--card-border);
+      color: #ffffff;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      width: 180px;
+      outline: none;
+      transition: all 0.2s;
+    }
+    .filter-input:focus {
+      width: 240px;
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
+    }
+
+    /* MAIN CONTAINER */
+    .page-wrapper {
+      max-width: 1440px;
+      margin: 32px auto;
+      padding: 0 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    /* SECTION CARDS */
+    .section-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 28px 32px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+      position: relative;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* CARD TL;DR / EXECUTIVE SUMMARY BOX */
+    .tldr-box {
+      background: linear-gradient(90deg, rgba(56, 189, 248, 0.08) 0%, rgba(129, 140, 248, 0.04) 100%);
+      border-left: 4px solid var(--accent-blue);
+      border-radius: 4px 8px 8px 4px;
+      padding: 12px 18px;
+      margin-bottom: 20px;
+    }
+
+    .tldr-label {
+      font-size: 10.5px;
+      font-family: var(--font-mono);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--accent-blue);
+      margin-bottom: 4px;
+    }
+
+    .tldr-text {
+      font-size: 14.5px;
+      font-weight: 600;
+      color: #ffffff;
+      line-height: 1.5;
+    }
+
+    /* METRIC TAGS PILLS */
+    .metrics-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .metric-pill {
+      font-size: 11px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 14px;
+      background: #151f33;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #38bdf8;
+    }
+
+    /* TACTICAL COACHING INSIGHT BOX */
+    .coaching-box {
+      background: rgba(52, 211, 153, 0.05);
+      border: 1px solid rgba(52, 211, 153, 0.25);
+      border-radius: 6px;
+      padding: 10px 14px;
+      margin-top: 14px;
+      font-size: 13px;
+      color: #e2e8f0;
+    }
+    .coaching-box strong { color: var(--accent-emerald); }
+
+    /* GRID LAYOUTS */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    @media (max-width: 1100px) {
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+
+    /* GLANCE RECALL HERO BANNER */
+    .glance-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+    }
+
+    .glance-box {
+      background: var(--card-inner);
+      border: 1px solid var(--card-border);
+      border-left: 4px solid var(--accent-blue);
+      border-radius: 8px;
+      padding: 18px 20px;
+    }
+
+    .glance-box.ai { border-left-color: var(--accent-purple); }
+    .glance-box.rapport { border-left-color: var(--accent-emerald); }
+
+    .glance-label {
+      font-size: 11px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+    }
+
+    .glance-content {
+      font-size: 14.5px;
+      font-weight: 500;
+      color: #ffffff;
+      line-height: 1.5;
+    }
+
+    /* DETAIL LISTS */
+    .deep-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .deep-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+    .deep-item:last-child { border-bottom: none; padding-bottom: 0; }
+
+    .item-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .item-tag {
+      font-weight: 700;
+      color: #ffffff;
+      font-size: 14px;
+    }
+
+    .item-text {
+      color: #cbd5e1;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* BADGES & CITATIONS */
+    .badge-verified {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-family: var(--font-mono);
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: rgba(52, 211, 153, 0.12);
+      border: 1px solid rgba(52, 211, 153, 0.35);
+      color: var(--accent-emerald);
+    }
+
+    .badge-inference {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-family: var(--font-mono);
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: rgba(251, 191, 36, 0.12);
+      border: 1px solid rgba(251, 191, 36, 0.35);
+      color: var(--accent-amber);
+    }
+
+    .citation-link {
+      font-size: 11px;
+      font-family: var(--font-mono);
+      color: var(--accent-blue);
+      text-decoration: none;
+      background: rgba(56, 189, 248, 0.08);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      padding: 1px 7px;
+      border-radius: 4px;
+      margin-left: 6px;
+      display: inline-block;
+      transition: all 0.15s;
+    }
+    .citation-link:hover {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--accent-blue);
+      color: #ffffff;
+    }
+
+    /* QUOTE CARDS */
+    .quote-card {
+      background: rgba(192, 132, 252, 0.06);
+      border-left: 3px solid var(--accent-purple);
+      border-radius: 0 8px 8px 0;
+      padding: 16px 20px;
+      margin-top: 16px;
+    }
+
+    .quote-body {
+      font-style: italic;
+      font-size: 14.5px;
+      color: #e2e8f0;
+      line-height: 1.6;
+    }
+
+    .quote-footer {
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--text-muted);
+      font-style: normal;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* TECHNICAL ARCHITECTURE MATRIX */
+    .tech-matrix {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .tech-box {
+      background: var(--card-inner);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 18px 20px;
+    }
+
+    .tech-box-title {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--accent-purple);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* POWER QUESTION CARD */
+    .question-card {
+      background: var(--card-inner);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 18px 20px;
+      margin-bottom: 16px;
+      transition: border-color 0.2s;
+    }
+    .question-card:hover {
+      border-color: var(--accent-emerald);
+    }
+
+    .question-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 8px;
+    }
+
+    .question-category {
+      font-size: 11px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--accent-emerald);
+    }
+
+    .copy-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      font-size: 11px;
+      font-family: var(--font-mono);
+      padding: 3px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .copy-btn:hover {
+      color: #ffffff;
+      border-color: var(--text-main);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .question-text {
+      font-size: 15px;
+      font-weight: 600;
+      color: #ffffff;
+      line-height: 1.5;
+      margin-bottom: 8px;
+    }
+
+    .question-rationale {
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.5;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding-top: 8px;
+    }
+
+    /* RADAR LIST */
+    .radar-box {
+      background: var(--card-inner);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 18px 20px;
+      margin-bottom: 16px;
+    }
+    .radar-box.green { border-left: 3px solid var(--accent-emerald); }
+    .radar-box.red { border-left: 3px solid var(--accent-rose); }
+
+    .radar-title {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 10px;
+    }
+    .radar-box.green .radar-title { color: var(--accent-emerald); }
+    .radar-box.red .radar-title { color: var(--accent-rose); }
+
+    /* SOURCES DIRECTORY */
+    .source-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      font-family: var(--font-mono);
+    }
+    .source-table th {
+      text-align: left;
+      padding: 8px 12px;
+      color: var(--text-dim);
+      border-bottom: 1px solid var(--card-border);
+      font-weight: 600;
+      font-size: 11px;
+      text-transform: uppercase;
+    }
+    .source-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: var(--text-muted);
+    }
+    .source-table tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+      color: #ffffff;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- STICKY HUD HEADER -->
+  <header class="hud-header">
+    <div class="hud-container">
+      <div>
+        <div class="hud-title-group">
+          <span class="hud-company">{{ company_name }}</span>
+          <span class="hud-sep">/</span>
+          <span class="hud-person">{{ interviewer_name }}</span>
+        </div>
+        <div class="hud-meta">
+          <span>Role: <strong style="color: #ffffff;">{{ target_role }}</strong></span>
+          <span>•</span>
+          <span>{{ meeting_type }}</span>
+          <span>•</span>
+          <span class="judge-badge">{{ judge_score_badge }}</span>
+        </div>
+      </div>
+
+      <nav class="hud-nav">
+        <a href="#glance" class="nav-link">⚡ 60s HUD</a>
+        <a href="#interviewer" class="nav-link">👤 The Interviewer</a>
+        <a href="#company" class="nav-link">🏢 Company & Moat</a>
+        <a href="#ai-tech" class="nav-link">🤖 AI Architecture</a>
+        <a href="#questions" class="nav-link">🎯 Power Questions</a>
+        <a href="#sources" class="nav-link">📚 Sources ({{ sources_count }})</a>
+        <input type="text" id="filterBox" class="filter-input" placeholder="🔍 Quick Filter..." onkeyup="filterContent()">
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-wrapper">
+
+    <!-- 60-SECOND RAPID RECALL (TOP GLANCE BANNER) -->
+    <section id="glance" class="section-card">
+      <div class="section-header">
+        <div class="section-title">⚡ 60-Second Rapid Recall Anchors</div>
+        <span class="badge-verified">✓ Grounded Intel</span>
+      </div>
+
+      <div class="glance-grid">
+        <div class="glance-box">
+          <div class="glance-label">🏢 Company Value Engine</div>
+          <div class="glance-content">{{ company_one_liner }}</div>
+        </div>
+
+        <div class="glance-box ai">
+          <div class="glance-label">🤖 Strategic AI Anchor</div>
+          <div class="glance-content">{{ ai_agenda_hook }}</div>
+        </div>
+
+        <div class="glance-box rapport">
+          <div class="glance-label">🤝 Personal Rapport Angle</div>
+          <div class="glance-content">{{ personal_rapport_hook }}</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- INTERVIEWER & COMPANY SPLIT GRID -->
+    <div class="grid-2">
+      
+      <!-- INTERVIEWER PROFILE -->
+      <section id="interviewer" class="section-card">
+        <div class="section-header">
+          <div class="section-title">👤 {{ interviewer_name }}</div>
+          <span class="badge-verified">{{ interviewer_title }}</span>
+        </div>
+
+        <div class="tldr-box">
+          <div class="tldr-label">⚡ 5-Second Executive TL;DR</div>
+          <div class="tldr-text">{{ interviewer_tldr }}</div>
+        </div>
+
+        <div class="metrics-row">
+          {{ interviewer_metrics_pills }}
+        </div>
+
+        <ul class="deep-list">
+          <li class="deep-item">
+            <div class="item-header">
+              <span class="item-tag">Current Scope & Ownership:</span>
+            </div>
+            <div class="item-text">{{ interviewer_current_scope }}</div>
+          </li>
+
+          <li class="deep-item">
+            <div class="item-header">
+              <span class="item-tag">Career Pedigree & Tenure:</span>
+            </div>
+            <div class="item-text">{{ interviewer_pedigree }}</div>
+          </li>
+
+          <li class="deep-item">
+            <div class="item-header">
+              <span class="item-tag">Public Talks, Papers & Stance:</span>
+            </div>
+            <div class="item-text">{{ interviewer_public_stance }}</div>
+          </li>
+
+          <li class="deep-item">
+            <div class="item-header">
+              <span class="item-tag">Communication & Technical Style:</span>
+            </div>
+            <div class="item-text">{{ interviewer_style }}</div>
+          </li>
+        </ul>
+
+        {{ interviewer_quote_block }}
+
+        <div class="coaching-box">
+          <strong>💡 Tactical Edge in Call:</strong> {{ interviewer_coaching_point }}
+        </div>
+      </section>
+
+      <!-- COMPANY DNA & LEADERSHIP -->
+      <section id="company" class="section-card">
+        <div class="section-header">
+          <div class="section-title">🏢 {{ company_name }} Fundamentals</div>
+          <span class="badge-verified">{{ company_stage_or_ticker }}</span>
+        </div>
+
+        <div class="tldr-box">
+          <div class="tldr-label">⚡ 5-Second Executive TL;DR</div>
+          <div class="tldr-text">{{ company_tldr }}</div>
+        </div>
+
+        <div class="metrics-row">
+          {{ company_metrics_pills }}
+        </div>
+
+        <ul class="deep-list">
+          <li class="deep-item">
+            <div class="item-header">
+              <span class="item-tag">Core Business & Monetization:</span>
+            </div>
+            <div class="item-text">{{ company_core_business }}</div>
+          </li>
+
+          <li class="deep-item">
+            <div class="item-header">
+              <span class="item-tag">Defensible Moat:</span>
+            </div>
+            <div class="item-text">{{ company_moat }}</div>
+          </li>
+
+          <li class="deep-item">
+            <div class="item-header">
+              <span class="item-tag">Executive Leadership:</span>
+            </div>
+            <div class="item-text">{{ company_leadership_summary }}</div>
+          </li>
+
+          <li class="deep-item">
+            <div class="item-header">
+              <span class="item-tag">Engineering Reputation:</span>
+            </div>
+            <div class="item-text">{{ company_reputation }}</div>
+          </li>
+
+          <li class="deep-item">
+            <div class="item-header">
+              <span class="item-tag">Recent News & Milestones:</span>
+            </div>
+            <div class="item-text">{{ company_recent_news }}</div>
+          </li>
+        </ul>
+
+        <div class="coaching-box">
+          <strong>💡 Tactical Edge in Call:</strong> {{ company_coaching_point }}
+        </div>
+      </section>
+
+    </div>
+
+    <!-- TECHNICAL AI AGENDA & ARCHITECTURE (EXPANDED DEEP-DIVE) -->
+    <section id="ai-tech" class="section-card">
+      <div class="section-header">
+        <div class="section-title">🤖 AI Technical Strategy, Stack & Investments</div>
+        <span class="badge-verified">Technical Deep Dive</span>
+      </div>
+
+      <div class="tldr-box">
+        <div class="tldr-label">⚡ 5-Second Executive TL;DR</div>
+        <div class="tldr-text">{{ ai_tldr }}</div>
+      </div>
+
+      <div class="metrics-row">
+        {{ ai_metrics_pills }}
+      </div>
+
+      <div class="tech-matrix">
+        
+        <!-- ACTIVE PRODUCTS -->
+        <div class="tech-box">
+          <div class="tech-box-title">
+            <span>Production AI Products</span>
+            <span style="color: var(--accent-emerald);">● Deployed</span>
+          </div>
+          <ul class="deep-list">
+            {{ ai_products_bullets }}
+          </ul>
+        </div>
+
+        <!-- STACK & INFRA -->
+        <div class="tech-box">
+          <div class="tech-box-title">
+            <span>Models & Infra Stack</span>
+            <span style="color: var(--accent-blue);">● Architecture</span>
+          </div>
+          <ul class="deep-list">
+            {{ ai_stack_bullets }}
+          </ul>
+        </div>
+
+        <!-- INVESTMENTS & ROADMAP -->
+        <div class="tech-box">
+          <div class="tech-box-title">
+            <span>Capital Allocation & Bets</span>
+            <span style="color: var(--accent-purple);">● R&D / M&A</span>
+          </div>
+          <ul class="deep-list">
+            {{ ai_investments_bullets }}
+          </ul>
+        </div>
+
+      </div>
+
+      {{ ai_leadership_quotes }}
+
+      <div class="coaching-box" style="margin-top: 20px;">
+        <strong>💡 Tactical Edge in Call:</strong> {{ ai_coaching_point }}
+      </div>
+    </section>
+
+    <!-- POWER QUESTIONS & RADAR -->
+    <div class="grid-2">
+      
+      <!-- QUESTIONS -->
+      <section id="questions" class="section-card">
+        <div class="section-header">
+          <div class="section-title">🎯 Tailored Power Questions</div>
+          <span class="badge-verified">Ask in Interview</span>
+        </div>
+
+        <div id="questionsContainer">
+          {{ questions_html }}
+        </div>
+      </section>
+
+      <!-- RADAR & LANDMINES -->
+      <section id="radar" class="section-card">
+        <div class="section-header">
+          <div class="section-title">⚠️ Tactical Radar (Green Flags vs Landmines)</div>
+          <span class="badge-inference">Conversation Guidance</span>
+        </div>
+
+        <div class="radar-box green">
+          <div class="radar-title">🟢 Green Flags (Signals to Lean Into)</div>
+          <ul class="deep-list">
+            {{ green_flags_bullets }}
+          </ul>
+        </div>
+
+        <div class="radar-box red">
+          <div class="radar-title">🔴 Landmines (Unresolved Gaps / Sensitive Topics)</div>
+          <ul class="deep-list">
+            {{ landmines_bullets }}
+          </ul>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- GROUNDED SOURCES & CITATIONS DIRECTORY -->
+    <section id="sources" class="section-card">
+      <div class="section-header">
+        <div class="section-title">📚 Verified Sources & Citation Directory</div>
+        <span class="badge-verified">Anti-Hallucination Audit Trail</span>
+      </div>
+
+      <table class="source-table">
+        <thead>
+          <tr>
+            <th style="width: 25%;">Publisher / Source</th>
+            <th style="width: 45%;">Headline / Document Title</th>
+            <th style="width: 15%;">Date</th>
+            <th style="width: 15%;">Verification Link</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{ sources_table_rows }}
+        </tbody>
+      </table>
+    </section>
+
+  </main>
+
+  <script>
+    function copyQuestion(btn, text) {
+      navigator.clipboard.writeText(text).then(() => {
+        const original = btn.innerText;
+        btn.innerText = "Copied!";
+        setTimeout(() => btn.innerText = original, 1500);
+      });
+    }
+
+    function filterContent() {
+      const query = document.getElementById('filterBox').value.toLowerCase();
+      const items = document.querySelectorAll('.deep-item, .tech-box, .question-card, .glance-box, .tldr-box');
+      items.forEach(el => {
+        const text = el.innerText.toLowerCase();
+        if (!query || text.includes(query)) {
+          el.style.display = '';
+        } else {
+          el.style.display = 'none';
+        }
+      });
+    }
+  </script>
+</body>
+</html>
